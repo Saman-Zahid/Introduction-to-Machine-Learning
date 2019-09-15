@@ -1,0 +1,72 @@
+data <- read.csv2("data.csv", header = TRUE, sep = ";", quote = "\"",
+                  dec = ",", fill = TRUE, check.names = FALSE)
+data1 <- as.data.frame(data)
+pvals <- c()
+
+for (i in 1:length(data1)) {
+  
+  ttest <- t.test(data1[i], data = data1, alternative = "two.sided")
+  pvals[i] <- ttest$p.value
+}
+
+pvalues_df <- data.frame(p_value=pvals,feature=1:length(data1)) 
+pvalues_df <- pvalues_df[order(pvalues_df$p_value),]
+
+
+ALPHA <- 0.05
+L <- c()
+it <- 1
+# Let alpha = 0.05  ## ask oleg
+for (j in 1:nrow(pvalues_df)) {
+  if(pvalues_df$p_value[j] < ALPHA * (j / nrow(pvalues_df)) )
+  {
+    L[it] <- j
+    it <- it +1
+  }
+}
+max(L)
+
+LL = pvalues[max(L)]
+LL
+newPvalues <- c()
+pvalue_feature <- c()
+pvalue_status <- c()
+j<- 1
+for (j in 1:nrow(pvalues_df)) 
+{
+
+  pvalue_status[j] <- TRUE
+  newPvalues[j] <- pvalues_df$p_value[j]
+  pvalue_feature[j] <- pvalues_df$feature[j]
+  if(pvalues[j] <= LL)
+  {
+    pvalue_status[j] <- FALSE
+  }
+
+}
+result <- data.frame(p_value=newPvalues, feature=pvalue_feature,status=pvalue_status)
+
+
+rejected_features <- c()
+k <- 1
+for (j in 1:ncol(data1)) {
+  
+  if(result$status[j] == FALSE)
+  {
+    rejected_features[k] <- colnames(data1[result$feature[j]])
+    k<- k + 1
+  }
+}
+rejected_features
+
+library(ggplot2)
+p <- ggplot(result, aes(x=index, y=p_value)) + geom_point(aes(color=status), size=1 ) + 
+  scale_color_manual (values =  c('blue', 'red')) +
+  labs(x="CL carspace length", y="RW rear Width", colour="Classes") 
+  # +
+  # geom_abline(slope = glm_slope, intercept = glm_intercept) + ggtitle("Logistic Regression decision Boundary")
+p
+
+BH = p.adjust(pvalues, "BH")
+BH
+plot(BH)

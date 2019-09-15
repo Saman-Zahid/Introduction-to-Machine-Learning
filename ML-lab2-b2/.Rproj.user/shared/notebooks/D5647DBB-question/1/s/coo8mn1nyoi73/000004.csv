@@ -1,0 +1,7 @@
+"0","library(kernlab)"
+"0","x <- as.matrix(train[,-4703])"
+"0","y <- train[,4703]"
+"0","svm_fit <- ksvm(x = Conference ~ . ,data = train,kernel=""vanilladot"")"
+"0"," ypred <- predict(svm_fit, newdata = test, type=""response"")"
+"0","confusion_mat <- table(ypred,test$Conference)"
+"0","misclas_svm <- 1 - sum (diag(confusion_mat))/sum(confusion_mat)"

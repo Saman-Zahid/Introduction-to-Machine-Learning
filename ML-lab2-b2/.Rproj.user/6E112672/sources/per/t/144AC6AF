@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1514077850249.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "8|65|211|0|\n212|41|479|0|\n",
+    "hash" : "4207996806",
+    "id" : "144AC6AF",
+    "lastKnownWriteTime" : 1514157709,
+    "last_content_update" : 1514208001392,
+    "path" : "~/Documents/projects/machine-learning-labs/Lab-2-block-2/group8.Rmd",
+    "project_path" : "group8.Rmd",
+    "properties" : {
+        "cursorPosition" : "479,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

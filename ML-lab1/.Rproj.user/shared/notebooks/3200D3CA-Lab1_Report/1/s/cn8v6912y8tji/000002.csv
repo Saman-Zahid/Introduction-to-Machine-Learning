@@ -1,0 +1,3 @@
+"0","library(readxl)"
+"0","spambase <- read_excel(""spambase.xlsx"")"
+"0","spambase <- as.data.frame(spambase)"

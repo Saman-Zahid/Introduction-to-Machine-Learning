@@ -1,0 +1,512 @@
+if(pvalues[j] <= LL)
+{
+pvalue_status[j] <- FALSE
+}
+}
+result <- data.frame(p_value=newPvalues, feature=pvalue_feature,status=pvalue_status)
+rejected_features <- c()
+for (j in 1:ncol(data1)) {
+if(result$status[j] == FALSE)
+{
+rejected_features <- c(rejected_features,colnames(result$feature[j]))
+}
+}
+rejected_features
+library(ggplot2)
+p <- ggplot(result, aes(x=index, y=p_value)) + geom_point(aes(color=status), size=1 ) +
+scale_color_manual (values =  c('blue', 'red')) +
+labs(x="CL carspace length", y="RW rear Width", colour="Classes")
+# +
+# geom_abline(slope = glm_slope, intercept = glm_intercept) + ggtitle("Logistic Regression decision Boundary")
+p
+BH = p.adjust(pvalues, "BH")
+BH
+plot(BH)
+rejected_features
+data <- read.csv2("data.csv", header = TRUE, sep = ";", quote = "\"",
+dec = ",", fill = TRUE, check.names = FALSE)
+data1 <- as.data.frame(data)
+pvals <- c()
+for (i in 1:length(data1)) {
+ttest <- t.test(data1[i], data = data1, alternative = "two.sided")
+pvals[i] <- ttest$p.value
+}
+pvalues_df <- data.frame(p_value=pvals,feature=1:length(data1))
+pvalues_df <- pvalues_df[order(pvalues_df$p_value),]
+ALPHA <- 0.05
+L <- c()
+it <- 1
+# Let alpha = 0.05  ## ask oleg
+for (j in 1:nrow(pvalues_df)) {
+if(pvalues_df$p_value[j] < ALPHA * (j / nrow(pvalues_df)) )
+{
+L[it] <- j
+it <- it +1
+}
+}
+max(L)
+LL = pvalues[max(L)]
+LL
+newPvalues <- c()
+pvalue_feature <- c()
+pvalue_status <- c()
+j<- 1
+for (j in 1:nrow(pvalues_df))
+{
+pvalue_status[j] <- TRUE
+newPvalues[j] <- pvalues_df$p_value[j]
+pvalue_feature[j] <- pvalues_df$feature[j]
+if(pvalues[j] <= LL)
+{
+pvalue_status[j] <- FALSE
+}
+}
+result <- data.frame(p_value=newPvalues, feature=pvalue_feature,status=pvalue_status)
+rejected_features <- c()
+for (j in 1:ncol(data1)) {
+if(result$status[j] == FALSE)
+{
+rejected_features <- c(rejected_features,colnames(data1[result$feature[j]]))
+}
+}
+rejected_features
+library(ggplot2)
+p <- ggplot(result, aes(x=index, y=p_value)) + geom_point(aes(color=status), size=1 ) +
+scale_color_manual (values =  c('blue', 'red')) +
+labs(x="CL carspace length", y="RW rear Width", colour="Classes")
+# +
+# geom_abline(slope = glm_slope, intercept = glm_intercept) + ggtitle("Logistic Regression decision Boundary")
+p
+BH = p.adjust(pvalues, "BH")
+BH
+plot(BH)
+debugSource('~/Documents/projects/machine-learning-labs/Lab-2-block-2/test.R', echo=TRUE)
+colnames(data1[result$feature[j]])
+rejected_features
+k <- 1
+for (j in 1:ncol(data1)) {
+if(result$status[j] == FALSE)
+{
+rejected_features[k] <- colnames(data1[result$feature[j]])
+k<- k + 1
+}
+}
+rejected_features
+rejected_features <- c()
+k <- 1
+for (j in 1:ncol(data1)) {
+if(result$status[j] == FALSE)
+{
+rejected_features[k] <- colnames(data1[result$feature[j]])
+k<- k + 1
+}
+}
+rejected_features
+library(readxl)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+data <- read_excel("influenza.xlsx")
+data_inf <- as.data.frame(data)
+#data_series <- data.frame(Time=data$Time, mortality= data$Mortality,influenza=data$Influenza)
+# data_ts <- ts(data_series,start = 1995,frequency = 52)
+# ts.plot(data_ts)
+p1 <- ggplot(data_inf, aes(Time, y = Mortality)) +
+geom_point(colour="blue")
+p2 <- ggplot(data_inf, aes(Time, y = Influenza)) +
+geom_point(colour="red")
+grid.arrange(p1,p2,ncol=1,nrow=2)
+## Influenza cases have the peaks at the same points where the morltality plot has peaks,
+# it shows that when there is increasing rate of mortality, the influenza cases have increased
+# or it can be interpreted as increasing number of influenza cases have affected the mortality rate
+## part 2
+library(mgcv)
+w <- unique(data_inf$Week)
+fit_week <- gam(data_inf$Mortality ~ data_inf$Year + s(data_inf$Week,k=52), data = data_inf,family = "gaussian", method = "GCV.Cp")
+pred <- predict(fit_week)
+# Probilistic model: y = wo + w1x1 + w2x1^2 + e  (where wo=intercept,  w1= est value of 1st var, w2= est value of 2nd var)
+# Probilistic model: $y = -680.589 + 1.233*x1 + s(Week) + {\epsilon}~N(0,{\sigma}^2)   (for w1 confirm with oleg)
+## part3
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, pred = as.vector(pred))
+#
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,pred),colour = "red")
+p1
+## identify the trend ????
+plot(fit_week)
+## the mortality rate seems to decrease in the beginning and has the lowest values
+# between week 20 to 30 and then mortality again rises from week 40 onwards
+summary(fit) # to check significant values using p values
+# since year and week both gives values less than 0.05 p value therefore both are significant
+fit$sp #
+fit1 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=0.000113193), data = data_inf,family = "gaussian")
+summary(fit1)
+pred1 <- predict(fit1)
+fit2 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=0.000000001), data = data_inf,family = "gaussian")
+summary(fit2)
+pred2 <- predict(fit2)
+fit3 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=1.5), data = data_inf,family = "gaussian")
+summary(fit3)
+pred3 <- predict(fit3)
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, pred1 = as.vector(pred2),
+pred2 = as.vector(pred3))
+#
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,pred1),colour = "red")+
+geom_line(aes(time,pred2),colour = "green")
+p1
+## the very high annd very low values of pennalty factor leads to underfitting of model,
+# as it is evident from the plot in which green line represents the predicted values when
+# penalty factor is too high while red line represents the mortality when penalty factor is too low
+## deviance and degrees of freedom decreases with increase in penalty factor
+# part 5
+df_plot <- data.frame(time= data_inf$Time, influenza = data_inf$Influenza, residual = as.vector(fit_week$residuals))
+#
+p2 <- ggplot(df_plot, aes(x= time, y = influenza)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,residual),colour = "red")
+p2
+## Yes, it is evident from the plot that the temporal pattern in residuals seems to be correlated
+# to the outbreak of influenza since since the peaks in influenza occurs relative to the peaks in
+# residuals'
+## part 6
+w <- unique(data_inf$Week)
+y <- unique(data_inf$Year)
+i <- unique(data_inf$Influenza)
+fit_f <- gam(data_inf$Mortality ~ s(data_inf$Year,k=length(y)) + s(data_inf$Week,k=length(w))
++ s(data_inf$Influenza,k=length(i)), data = data_inf,
+family = "gaussian", method = "GCV.Cp")
+pred_f <- predict(fit_f)
+par(mfrow=c(2,2))
+plot(fit_f)
+## It can be illustrated from the plots of spline components that mortality does not depend much on
+# year and have little change annually that is with weeks, but the mortality shows a significant
+# relation with influenza that is with increasing cases of influenza, mortality increases
+par(mfrow=c(1,1))
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, predicted = as.vector(pred_f))
+#
+p3 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,predicted),colour = "red")
+p3
+## The plot of original and fitted values implies that this model is better than the previous
+# models as it gives the predicted values closest to the original values. This also indicates that
+# including influenza in modelling has a significant impact on fitting.
+library(readxl)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+data <- read_excel("influenza.xlsx")
+data_inf <- as.data.frame(data)
+#data_series <- data.frame(Time=data$Time, mortality= data$Mortality,influenza=data$Influenza)
+# data_ts <- ts(data_series,start = 1995,frequency = 52)
+# ts.plot(data_ts)
+p1 <- ggplot(data_inf, aes(Time, y = Mortality)) +
+geom_point(colour="blue")
+p2 <- ggplot(data_inf, aes(Time, y = Influenza)) +
+geom_point(colour="red")
+grid.arrange(p1,p2,ncol=1,nrow=2)
+## Influenza cases have the peaks at the same points where the morltality plot has peaks,
+# it shows that when there is increasing rate of mortality, the influenza cases have increased
+# or it can be interpreted as increasing number of influenza cases have affected the mortality rate
+## part 2
+library(mgcv)
+w <- unique(data_inf$Week)
+fit_week <- gam(data_inf$Mortality ~ data_inf$Year + s(data_inf$Week,k=52), data = data_inf,family = "gaussian", method = "GCV.Cp")
+pred <- predict(fit_week)
+# Probilistic model: y = wo + w1x1 + w2x1^2 + e  (where wo=intercept,  w1= est value of 1st var, w2= est value of 2nd var)
+# Probilistic model: $y = -680.589 + 1.233*x1 + s(Week) + {\epsilon}~N(0,{\sigma}^2)   (for w1 confirm with oleg)
+## part3
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, pred = as.vector(pred))
+#
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,pred),colour = "red")
+p1
+## identify the trend ????
+plot(fit_week)
+## the mortality rate seems to decrease in the beginning and has the lowest values
+# between week 20 to 30 and then mortality again rises from week 40 onwards
+summary(fit_week) # to check significant values using p values
+# since year and week both gives values less than 0.05 p value therefore both are significant
+fit_week$sp #
+fit1 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=0.000113193), data = data_inf,family = "gaussian")
+summary(fit1)
+pred1 <- predict(fit1)
+fit2 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=0.000000001), data = data_inf,family = "gaussian")
+summary(fit2)
+pred2 <- predict(fit2)
+fit3 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=1.5), data = data_inf,family = "gaussian")
+summary(fit3)
+pred3 <- predict(fit3)
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, pred1 = as.vector(pred2),
+pred2 = as.vector(pred3))
+#
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,pred1),colour = "red")+
+geom_line(aes(time,pred2),colour = "green")
+p1
+## the very high annd very low values of pennalty factor leads to underfitting of model,
+# as it is evident from the plot in which green line represents the predicted values when
+# penalty factor is too high while red line represents the mortality when penalty factor is too low
+## deviance and degrees of freedom decreases with increase in penalty factor
+# part 5
+df_plot <- data.frame(time= data_inf$Time, influenza = data_inf$Influenza, residual = as.vector(fit_week$residuals))
+#
+p2 <- ggplot(df_plot, aes(x= time, y = influenza)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,residual),colour = "red")
+p2
+## Yes, it is evident from the plot that the temporal pattern in residuals seems to be correlated
+# to the outbreak of influenza since since the peaks in influenza occurs relative to the peaks in
+# residuals'
+## part 6
+w <- unique(data_inf$Week)
+y <- unique(data_inf$Year)
+i <- unique(data_inf$Influenza)
+fit_f <- gam(data_inf$Mortality ~ s(data_inf$Year,k=length(y)) + s(data_inf$Week,k=length(w))
++ s(data_inf$Influenza,k=length(i)), data = data_inf,
+family = "gaussian", method = "GCV.Cp")
+pred_f <- predict(fit_f)
+par(mfrow=c(2,2))
+plot(fit_f)
+## It can be illustrated from the plots of spline components that mortality does not depend much on
+# year and have little change annually that is with weeks, but the mortality shows a significant
+# relation with influenza that is with increasing cases of influenza, mortality increases
+par(mfrow=c(1,1))
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, predicted = as.vector(pred_f))
+#
+p3 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,predicted),colour = "red")
+p3
+## The plot of original and fitted values implies that this model is better than the previous
+# models as it gives the predicted values closest to the original values. This also indicates that
+# including influenza in modelling has a significant impact on fitting.
+library(readxl)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+data <- read_excel("influenza.xlsx")
+data_inf <- as.data.frame(data)
+#data_series <- data.frame(Time=data$Time, mortality= data$Mortality,influenza=data$Influenza)
+# data_ts <- ts(data_series,start = 1995,frequency = 52)
+# ts.plot(data_ts)
+p1 <- ggplot(data_inf, aes(Time, y = Mortality)) +
+geom_point(colour="blue")
+p2 <- ggplot(data_inf, aes(Time, y = Influenza)) +
+geom_point(colour="red")
+grid.arrange(p1,p2,ncol=1,nrow=2)
+## Influenza cases have the peaks at the same points where the morltality plot has peaks,
+# it shows that when there is increasing rate of mortality, the influenza cases have increased
+# or it can be interpreted as increasing number of influenza cases have affected the mortality rate
+## part 2
+library(mgcv)
+w <- unique(data_inf$Week)
+fit_week <- gam(data_inf$Mortality ~ data_inf$Year + s(data_inf$Week,k=52), data = data_inf,family = "gaussian", method = "GCV.Cp")
+pred <- predict(fit_week)
+# Probilistic model: y = wo + w1x1 + w2x1^2 + e  (where wo=intercept,  w1= est value of 1st var, w2= est value of 2nd var)
+# Probilistic model: $y = -680.589 + 1.233*x1 + s(Week) + {\epsilon}~N(0,{\sigma}^2)   (for w1 confirm with oleg)
+## part3
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, pred = as.vector(pred))
+#
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,pred),colour = "red")
+p1
+## identify the trend ????
+plot(fit_week)
+## the mortality rate seems to decrease in the beginning and has the lowest values
+# between week 20 to 30 and then mortality again rises from week 40 onwards
+summary(fit_week) # to check significant values using p values
+# since year and week both gives values less than 0.05 p value therefore both are significant
+fit_week$sp #
+fit1 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=0.000113193), data = data_inf,family = "gaussian")
+summary(fit1)
+pred1 <- predict(fit1)
+fit2 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=0.000000001), data = data_inf,family = "gaussian")
+summary(fit2)
+pred2 <- predict(fit2)
+fit3 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=1.5), data = data_inf,family = "gaussian")
+summary(fit3)
+pred3 <- predict(fit3)
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, pred1 = as.vector(pred2),
+pred2 = as.vector(pred3))
+#
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,pred1),colour = "red")+
+geom_line(aes(time,pred2),colour = "green")
+p1
+## the very high annd very low values of pennalty factor leads to underfitting of model,
+# as it is evident from the plot in which green line represents the predicted values when
+# penalty factor is too high while red line represents the mortality when penalty factor is too low
+## deviance and degrees of freedom decreases with increase in penalty factor
+# part 5
+df_plot <- data.frame(time= data_inf$Time, influenza = data_inf$Influenza, residual = as.vector(fit_week$residuals))
+#
+p2 <- ggplot(df_plot, aes(x= time, y = influenza)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,residual),colour = "red")
+p2
+## Yes, it is evident from the plot that the temporal pattern in residuals seems to be correlated
+# to the outbreak of influenza since since the peaks in influenza occurs relative to the peaks in
+# residuals'
+## part 6
+w <- unique(data_inf$Week)
+y <- unique(data_inf$Year)
+i <- unique(data_inf$Influenza)
+fit_f <- gam(data_inf$Mortality ~ s(data_inf$Year,k=length(y)) + s(data_inf$Week,k=length(w))
++ s(data_inf$Influenza,k=length(i)), data = data_inf,
+family = "gaussian", method = "GCV.Cp")
+pred_f <- predict(fit_f)
+par(mfrow=c(2,2))
+plot(fit_f)
+## It can be illustrated from the plots of spline components that mortality does not depend much on
+# year and have little change annually that is with weeks, but the mortality shows a significant
+# relation with influenza that is with increasing cases of influenza, mortality increases
+par(mfrow=c(1,1))
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, predicted = as.vector(pred_f))
+#
+p3 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,predicted),colour = "red")
+p3
+## The plot of original and fitted values implies that this model is better than the previous
+# models as it gives the predicted values closest to the original values. This also indicates that
+# including influenza in modelling has a significant impact on fitting.
+plot(fit_week)
+summary(fit_week) # to check significant values using p values
+fit_week
+fit_week$sp #
+unlist(fit_week$sp) #
+as.numeric(Ot(fit_week$sp)) #
+as.numeric(t(fit_week$sp)) #
+fit1 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=as.numeric(t(fit_week$sp))), data = data_inf,family = "gaussian")
+summary(fit1)
+pred1 <- predict(fit1)
+fit2 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=0.000000001), data = data_inf,family = "gaussian")
+summary(fit2)
+pred2 <- predict(fit2)
+fit3 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=1.5), data = data_inf,family = "gaussian")
+summary(fit3)
+pred3 <- predict(fit3)
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, pred1 = as.vector(pred2),
+pred2 = as.vector(pred3))
+#
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,pred1),colour = "red")+
+geom_line(aes(time,pred2),colour = "green")
+p1
+df_plot <- data.frame(time= data_inf$Time, influenza = data_inf$Influenza, residual = as.vector(fit_week$residuals))
+#
+p2 <- ggplot(df_plot, aes(x= time, y = influenza)) +
+geom_point(colour= "blue") +
+geom_line(aes(time,residual),colour = "red")
+p2
+installed.packages("kernlab")
+installed.packages("kernlab")
+install.packages("kernlab")
+library(kernlab)
+knitr::opts_chunk$set(echo = TRUE)
+library(kernlab)
+library(kernlab)
+svm_fit <- ksvm(x = Conference ~ . ,data = train,kernel="vanilladot")
+data <- read.csv2("data.csv", header = TRUE, sep = ";", quote = "\"",
+dec = ",", fill = TRUE, check.names = FALSE)
+data <- read.csv2("data.csv", header = TRUE, sep = ";", quote = "\"",
+dec = ",", fill = TRUE, check.names = FALSE)
+data1 <- as.data.frame(data)
+data_email <- as.data.frame(data)
+data_email$Conference <- as.factor(data$Conference)
+n=dim(data_email)[1]
+set.seed(12345)
+# 70% Training Data
+id=sample(1:n, floor(n*0.7))
+train=data_email[id,]
+train=data_email[id,]
+# 30% validation & testing Data
+test = data_email[-id,]
+x <- as.matrix(train[,-4703])
+y <- train[,4703]
+library(kernlab)
+svm_fit <- ksvm(x = Conference ~ . ,data = train,kernel="vanilladot")
+ypred <- predict(svm_fit, newdata = test, type="response")
+confusion_mat <- table(ypred,test$Conference)
+misclas_svm <- 1 - sum (diag(confusion_mat))/sum(confusion_mat)
+svm_fit <- ksvm(x = Conference ~ . ,data = train,kernel="vanilladot")
+ypred <- predict(svm_fit, newdata = test, type="response")
+confusion_mat <- table(ypred,test$Conference)
+misclas_svm <- 1 - sum (diag(confusion_mat))/sum(confusion_mat)
+misclas_svm
+misclas_svm <- 1 - sum (diag(confusion_mat))/sum(confusion_mat)
+misclas_svm
+library(kernlab)
+x <- as.matrix(train[,-4703])
+y <- train[,4703]
+svm_fit <- ksvm(x = Conference ~ . ,data = train,kernel="vanilladot")
+ypred <- predict(svm_fit, newdata = test, type="response")
+confusion_mat <- table(ypred,test$Conference)
+misclas_svm <- 1 - sum (diag(confusion_mat))/sum(confusion_mat)
+x <- as.matrix(train[,-4703])
+y <- train[,4703]
+svm_fit <- ksvm(x = Conference ~ . ,data = train,kernel="vanilladot")
+svm_fit <- ksvm(x = Conference ~ . ,data = train,kernel="vanilladot")
+ypred <- predict(svm_fit, newdata = test, type="response")
+confusion_mat <- table(ypred,test$Conference)
+misclas_svm <- 1 - sum (diag(confusion_mat))/sum(confusion_mat)
+misclas_svm
+misclas_svm
+data <- read.csv2("data.csv", header = TRUE, sep = ";", quote = "\"",
+dec = ",", fill = TRUE, check.names = FALSE)
+data1 <- as.data.frame(data)
+data <- read.csv2("data.csv", header = TRUE, sep = ";", quote = "\"",
+dec = ",", fill = TRUE, check.names = FALSE)
+data1 <- as.data.frame(data)
+data_email <- as.data.frame(data)
+data_email$Conference <- as.factor(data$Conference)
+n=dim(data_email)[1]
+set.seed(12345)
+# 70% Training Data
+id=sample(1:n, floor(n*0.7))
+train=data_email[id,]
+# 30% validation & testing Data
+test = data_email[-id,]
+library(kernlab)
+x <- as.matrix(train[,-4703])
+y <- train[,4703]
+svm_fit <- ksvm(data = train,Conference ~ . ,kernel="vanilladot",
+scaled = FALSE)
+svm_fit
+install.packages("kernlab")
+install.packages("kernlab")
+install.packages("kernlab")
+data <- read.csv2("data.csv", header = TRUE, sep = ";", quote = "\"",
+dec = ",", fill = TRUE, check.names = FALSE)
+data1 <- as.data.frame(data)
+data_email <- as.data.frame(data)
+data_email$Conference <- as.factor(data$Conference)
+n=dim(data_email)[1]
+set.seed(12345)
+# 70% Training Data
+id=sample(1:n, floor(n*0.7))
+train=data_email[id,]
+# 30% validation & testing Data
+test = data_email[-id,]
+library(kernlab)
+x <- as.matrix(train[,-4703])
+y <- train[,4703]
+svm_fit <- ksvm(data = train,Conference ~ . ,kernel="vanilladot",
+scaled = FALSE)
+svm_fi
+svm_fir
+svm_fit
+install.packages("kernlab", type="source")
+install.packages("kernlab", type="source")
+install.packages("kernlab")
+install.packages("kernlab")
+install.packages("kernlab")

@@ -1,0 +1,2 @@
+"0","sensitivity_kn <- 1 - knearest_ROC$FPR"
+"0","sensitivity_knn <- 1 - kknn_ROC$FPR"

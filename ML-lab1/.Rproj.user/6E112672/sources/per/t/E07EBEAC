@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1513901187815.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "E07EBEAC",
+    "lastKnownWriteTime" : 4294967302,
+    "last_content_update" : 1513901187815,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "50B9FAA9",
+        "caption" : "myOrders",
+        "contentUrl" : "grid_resource/gridviewer.html?env=_rs_no_env&obj=myOrders&cache_key=50B9FAA9",
+        "displayedObservations" : "5",
+        "environment" : "_rs_no_env",
+        "object" : "myOrders",
+        "preview" : "0",
+        "totalObservations" : "5",
+        "variables" : "1370"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

@@ -1,0 +1,170 @@
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2[?1034hRabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ [KRabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git status
+On branch saman/assignment
+Your branch is up-to-date with 'origin/saman/assignment'.
+
+nothing to commit, working tree clean
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git add .
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git commit -m 'data'
+On branch saman/assignment
+Your branch is up-to-date with 'origin/saman/assignment'.
+
+nothing to commit, working tree clean
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git push [K[K[K[K[Kbranch 
+  master[m
+  rabnawaz/assignment[m
+* [32msaman/assignment[m
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git push origin saman/assignment
+Everything up-to-date
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ [KRabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ [KRabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ [KRabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ [KRabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git pull origin saman/assignment
+remote: Counting objects: 5, done.[K
+remote: Compressing objects:  50% (1/2)   [Kremote: Compressing objects: 100% (2/2)   [Kremote: Compressing objects: 100% (2/2), done.[K
+remote: Total 5 (delta 3), reused 5 (delta 3), pack-reused 0[K
+Unpacking objects:  20% (1/5)   Unpacking objects:  40% (2/5)   Unpacking objects:  60% (3/5)   Unpacking objects:  80% (4/5)   Unpacking objects: 100% (5/5)   Unpacking objects: 100% (5/5), done.
+From github.com:rjkhan/Lab-2-block-2
+ * branch            saman/assignment -> FETCH_HEAD
+   72c62e5..194fc40  saman/assignment -> origin/saman/assignment
+Updating 72c62e5..194fc40
+Fast-forward
+ assignment 1.R | 30 [32m+++++++++++++++++++++[m[31m---------[m
+ assignment 2.R |  8 [32m++++[m[31m----[m
+ group8.Rmd     | 70 [32m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++[m
+ 3 files changed, 95 insertions(+), 13 deletions(-)
+ create mode 100644 group8.Rmd
+[KRabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git status
+On branch saman/assignment
+Your branch is up-to-date with 'origin/saman/assignment'.
+
+nothing to commit, working tree clean
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git push origin saman/assignment
+Everything up-to-date
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git branch
+  master[m
+  rabnawaz/assignment[m
+* [32msaman/assignment[m
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git pull irig[K[K[K[Korigin saman/rabnawaz
+fatal: Couldn't find remote ref saman/rabnawaz
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git status
+On branch saman/assignment
+Your branch is up-to-date with 'origin/saman/assignment'.
+
+nothing to commit, working tree clean
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git statuspull origin saman/rabnawaz[K[K[K[K[K[K[K[Kassignment
+remote: Counting objects: 5, done.[K
+remote: Compressing objects:  50% (1/2)   [Kremote: Compressing objects: 100% (2/2)   [Kremote: Compressing objects: 100% (2/2), done.[K
+remote: Total 5 (delta 3), reused 5 (delta 3), pack-reused 0[K
+Unpacking objects:  20% (1/5)   Unpacking objects:  40% (2/5)   Unpacking objects:  60% (3/5)   Unpacking objects:  80% (4/5)   Unpacking objects: 100% (5/5)   Unpacking objects: 100% (5/5), done.
+From github.com:rjkhan/Lab-2-block-2
+ * branch            saman/assignment -> FETCH_HEAD
+   194fc40..655a7e5  saman/assignment -> origin/saman/assignment
+Updating 194fc40..655a7e5
+Fast-forward
+ assignment 1.R |  10 [32m+[m[31m-[m
+ assignment 2.R |  23 [32m++[m[31m-[m
+ group8.Rmd     | 646 [32m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++[m[31m-[m
+ 3 files changed, 667 insertions(+), 12 deletions(-)
+git status
+On branch saman/assignment
+Your branch is up-to-date with 'origin/saman/assignment'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	[31mmodified:   group8.Rmd[m
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	[31maaaaa.R[m
+	[31mgroup8.pdf[m
+	[31mquestion.Rmd[m
+	[31mquestion.pdf[m
+
+no changes added to commit (use "git add" and/or "git commit -a")
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git add .
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git commit -m 'project'
+[saman/assignment 758265e] project
+ Committer: Rabnawaz <rabnawaz@Rabnawazs-MacBook-Pro.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 5 files changed, 498 insertions(+), 397 deletions(-)
+ create mode 100644 aaaaa.R
+ create mode 100644 group8.pdf
+ create mode 100644 question.Rmd
+ create mode 100644 question.pdf
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git push origin r[Ksaman/assignment
+Counting objects: 7, done.
+Delta compression using up to 4 threads.
+Compressing objects:  14% (1/7)   Compressing objects:  28% (2/7)   Compressing objects:  42% (3/7)   Compressing objects:  57% (4/7)   Compressing objects:  71% (5/7)   Compressing objects:  85% (6/7)   Compressing objects: 100% (7/7)   Compressing objects: 100% (7/7), done.
+Writing objects:  14% (1/7)   Writing objects:  28% (2/7)   Writing objects:  42% (3/7)   Writing objects:  57% (4/7)   Writing objects:  71% (5/7)   Writing objects:  85% (6/7)   Writing objects: 100% (7/7)   Writing objects: 100% (7/7), 539.12 KiB | 5.50 MiB/s, done.
+Total 7 (delta 3), reused 0 (delta 0)
+remote: Resolving deltas:   0% (0/3)   [Kremote: Resolving deltas:  33% (1/3)   [Kremote: Resolving deltas: 100% (3/3)   [Kremote: Resolving deltas: 100% (3/3), completed with 2 local objects.[K
+To github.com:rjkhan/Lab-2-block-2.git
+   655a7e5..758265e  saman/assignment -> saman/assignment
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git status
+On branch saman/assignment
+Your branch is up-to-date with 'origin/saman/assignment'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	[31mmodified:   group8.Rmd[m
+	[31mmodified:   group8.pdf[m
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	[31m.DS_Store[m
+	[31mfahad_report.Rmd[m
+	[31mfahad_report.pdf[m
+	[31mrabnawaz.Rmd[m
+	[31mrabnawaz.pdf[m
+	[31msaman_report.Rmd[m
+	[31msaman_report.pdf[m
+
+no changes added to commit (use "git add" and/or "git commit -a")
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git add .
+g]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ git commit -m 'rmd files'
+[saman/assignment 7ac5c2c] rmd files
+ Committer: Rabnawaz <rabnawaz@Rabnawazs-MacBook-Pro.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 9 files changed, 3091 insertions(+), 331 deletions(-)
+ create mode 100644 .DS_Store
+ create mode 100644 fahad_report.Rmd
+ create mode 100644 fahad_report.pdf
+ create mode 100644 rabnawaz.Rmd
+ create mode 100644 rabnawaz.pdf
+ create mode 100644 saman_report.Rmd
+ create mode 100644 saman_report.pdf
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ gi tpush origin[K[K[K[K[K[K[K[K[K[K[K[K[Kt push origin saman_report.[K[K[K[K[K[K[K[K_report.[K[K[K[K[K[K[K[K/assignment
+Counting objects: 11, done.
+Delta compression using up to 4 threads.
+Compressing objects:   9% (1/11)   Compressing objects:  18% (2/11)   Compressing objects:  27% (3/11)   Compressing objects:  36% (4/11)   Compressing objects:  45% (5/11)   Compressing objects:  54% (6/11)   Compressing objects:  63% (7/11)   Compressing objects:  72% (8/11)   Compressing objects:  81% (9/11)   Compressing objects:  90% (10/11)   Compressing objects: 100% (11/11)   Compressing objects: 100% (11/11), done.
+Writing objects:   9% (1/11)   Writing objects:  18% (2/11)   Writing objects:  27% (3/11)   Writing objects:  54% (6/11)   Writing objects:  81% (9/11)   Writing objects:  90% (10/11)   Writing objects: 100% (11/11)   Writing objects: 100% (11/11), 564.43 KiB | 8.42 MiB/s, done.
+Total 11 (delta 7), reused 0 (delta 0)
+remote: Resolving deltas:   0% (0/7)   [Kremote: Resolving deltas:  42% (3/7)   [Kremote: Resolving deltas:  85% (6/7)   [Kremote: Resolving deltas: 100% (7/7)   [Kremote: Resolving deltas: 100% (7/7), completed with 1 local object.[K
+To github.com:rjkhan/Lab-2-block-2.git
+   758265e..7ac5c2c  saman/assignment -> saman/assignment
+]0;~/Documents/projects/machine-learning-labs/Lab-2-block-2Rabnawazs-MacBook-Pro:Lab-2-block-2 rabnawaz$ 

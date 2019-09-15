@@ -1,0 +1,98 @@
+library(readxl)
+data <- read_excel("spambase.xlsx")
+data <- as.data.frame(data) # coonvert into data frame
+set.seed(12345)
+# Dividing data in to a test and traning data set
+n <- dim(data)[1]
+id <- sample( 1:n, floor(n*0.5) )
+train <- data[id,]
+test <- data[-id,]
+knearest <- function(data, K, newdata){
+  train <- data
+  test <- newdata
+  # i Compute xhat
+  xhat <- as.matrix( data[,-length(data)] )
+  xhat <- xhat / sqrt(rowSums( xhat^2 ))
+  # ii Compute yhat
+  yhat <- newdata[,-length(newdata)]
+  yhat <- yhat / sqrt(rowSums(yhat^2))
+  # iii Compute matrix C as abs(c(Xi,Ymj))
+  C <- xhat %*% t(yhat)
+  # iv Compute the distance
+  D <- 1 - C
+  #Returns orders for each column (the lowest value is the fist value)
+  myOrders <- apply(D,MARGIN = 2, FUN = order)
+  #Keeps the K lowest values in the distance matrix
+  myOrders <- matrix(myOrders[1:K,], nrow=K)
+  #Extracts the K number of values of the observed y-variables
+  myData<-train[myOrders[1:K,],length(train)]
+  #puts the y-observations in a matrix where each column represents a column
+  myData<- matrix(myData,nrow=K,byrow = FALSE)
+  #Majority voting
+  myClass<-apply(myData,MARGIN = 2, FUN =function(X) round(mean(X)))
+  #Generating predictions for 1.6
+
+  myPredict<-apply(myData,MARGIN = 2, FUN =function(X) mean(X))
+  #missclassification rates for training and test
+  mcr<- c(1 - mean(myClass == test[,length(test)]))
+  #mcrTrain <- 1 - mean(myClass == train[,length(train)])
+  #mcr<-c(Test = mcrTest, Train = mcrTrain)
+  #Confusion-matrix for the training and test dataset
+  minRejm <- data.frame(myClass = myClass)
+  minRejm$myTest <- test[,length(test)]
+  minRejm$myTrain <- train[,length(train)]
+  cmTest <- table(myClass = minRejm$myClass,myTest = minRejm$myTest)
+  cmTrain<- table(myClass = minRejm$myClass,myTrain = minRejm$myTrain)
+  returnlist<-list(D = D, myClass = myClass,
+                   cmTest = cmTest,cmTrain = cmTrain,
+                   mcr=mcr,myPredict=myPredict)
+  return(returnlist)
+}
+mytest<-knearest(train, K = 5, test)
+print("For the traning-set")
+print(knearest(train, K = 5, train)$mcr)
+print("For the test-set")
+print(mytest$mcr)
+print(mytest$cmTrain)
+print(mytest$cmTest)
+myKN<-knearest(train, K = 1, test)
+cat("Missclassification rate for the traning-set")
+cat(knearest(train, K = 5, train)$mcr)
+cat("For the traning-set")
+cat(myKN$mcr)
+print(myKN$cmTrain)
+print(myKN$cmTest)
+testKNN <- function(KKNpred,pi){
+  a <- data.frame(pred = as.numeric( KKNpred > pi ))
+  a$test <- test[,length(test)]
+  return(table(a))
+}
+library(kknn)
+kknnearest <- kknn(Spam~., train, test, distance = 2, k = 5)
+tab1<-testKNN(predict(kknnearest),0.5)
+14
+print(tab1)
+print((1 -sum(diag(tab1))/(sum(tab1[,1])+sum(tab1[,2]))))
+rocKalk <- function(predictions,pi = 0.5){
+  a <- data.frame(pred = as.numeric( predictions > pi ))
+  a$test <- test[,length(test)]
+  confmat<-table(a)
+  TPR<-sum(confmat[2,2])/sum(confmat[,2])
+  FPR<-1 - sum(confmat[1,1])/sum(confmat[,1])
+  return(data.frame(TPR = TPR, FPR = FPR))
+}
+mypi<-seq(0.05,0.95,0.05)
+i <- 1
+rocMyFunk <- data.frame(matrix(ncol= 2 ,nrow = length(mypi)))
+for (n in mypi){
+  rocMyFunk[i,1]<-rocKalk(predictions = mytest$myPredict, pi=n)[[1]]
+  rocMyFunk[i,2]<-rocKalk(predictions = mytest$myPredict, pi=n)[[2]]
+  i <- i + 1
+}
+rocMyFunk$X1<- as.numeric(rocMyFunk$X1)
+rocMyFunk$X2<- as.numeric(rocMyFunk$X2)
+colnames(rocMyFunk) <- c("TPR","FPR")
+mypi<-seq(0.05,0.95,0.05)
+i <- 1
+
+                                                                                                    

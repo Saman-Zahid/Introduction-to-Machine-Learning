@@ -1,0 +1,3 @@
+"0","tecator <- read_excel(""tecator.xlsx"")"
+"0","tecator <- as.data.frame(tecator)"
+"0","Moisture_plot <- ggplot(tecator,aes(tecator$Protein,tecator$Moisture)) + geom_point(aes(tecator$Protein,tecator$Moisture)) + geom_smooth(method='lm')"

@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1514077815199.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1351072931",
+    "id" : "25CBDC79",
+    "lastKnownWriteTime" : 1514114562,
+    "last_content_update" : 1514114562743,
+    "path" : "~/Documents/projects/machine-learning-labs/Lab-2-block-2/assignment 1.R",
+    "project_path" : "assignment 1.R",
+    "properties" : {
+        "cursorPosition" : "146,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

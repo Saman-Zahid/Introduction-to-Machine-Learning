@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1513877824839.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "838390282",
+    "id" : "24DE9ACB",
+    "lastKnownWriteTime" : 1513935277,
+    "last_content_update" : 1513935287947,
+    "path" : "~/Documents/projects/machine-learning-labs/machine-learning-lab1/assignment1.R",
+    "project_path" : "assignment1.R",
+    "properties" : {
+        "cursorPosition" : "8,26",
+        "docOutlineSize" : "320.68654347183497",
+        "docOutlineVisible" : "0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

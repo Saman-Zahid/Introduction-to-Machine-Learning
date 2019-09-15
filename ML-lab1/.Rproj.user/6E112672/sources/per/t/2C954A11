@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1513958476161.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "330|27|337|0|\n339|26|401|0|\n",
+    "hash" : "3217898425",
+    "id" : "2C954A11",
+    "lastKnownWriteTime" : 1511314836,
+    "last_content_update" : 1513958721178,
+    "path" : "~/Documents/projects/machine-learning-labs/machine-learning-lab1/Lab1_Report.Rmd",
+    "project_path" : "Lab1_Report.Rmd",
+    "properties" : {
+        "cursorPosition" : "644,0",
+        "last_setup_crc32" : "30AC601Cbb338d19",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

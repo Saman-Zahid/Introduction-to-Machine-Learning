@@ -1,0 +1,783 @@
+---
+title: "Lab2 - Block 2"
+author: "Group8"
+date: "December 15, 2017"
+output: pdf_document
+---
+
+
+# Assignment 1. Using GAM and GLM to examine the mortality rates 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(readxl)
+library(ggplot2)
+library(reshape2)
+data <- read_excel("influenza.xlsx")
+data_inf <- as.data.frame(data)
+
+```
+## Part 1
+
+Visually inspecting the relationship between mortality and influenza
+
+```{r echo=FALSE}
+df_plot <- data.frame(time= data_inf$Time,
+                      mortality = data_inf$Mortality, 
+                      influenza = data_inf$Influenza)
+
+df <- melt(df_plot,measure.vars = c("mortality","influenza"))
+ggplot(df,aes(x= time, y = value,colour = variable)) + geom_point()
+
+```
+
+From plot it can be observed that influenza cases have the peaks at the same 
+points where the morltality plot has peaks,
+it shows that when there is increase in rate of influenza cases , mortality have increased drastically
+
+## Part 2
+
+Fitting generalized additive model keeping Year as linear function and 
+week as spline function of mortality
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(mgcv)
+
+w <- unique(data_inf$Week)
+fit_week <- gam(data_inf$Mortality ~ data_inf$Year + s(data_inf$Week,k=52), 
+                data = data_inf,
+                family = "gaussian", method = "GCV.Cp")
+
+```
+
+Probilistic model: $y = w_o + w_1x_1 + w_2x_1^2 + e$
+
+Probilistic model: $y = -680.589 + 1.233*x_1 + s(Week) + {\epsilon}\sim N(0,{\sigma}^2)$
+
+## Part 3
+
+```{r echo=FALSE , warning=FALSE, message=FALSE}
+
+pred <- predict(fit_week)
+
+ df_plot <- data.frame(time= data_inf$Time, 
+                       mortality = data_inf$Mortality, 
+                       pred = as.vector(pred))
+ 
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+  geom_point(colour= "blue") +
+  geom_line(aes(time,pred),colour = "red")
+p1
+
+```
+__Quality of fit?__
+
+In plot, original values are indicated by blue points while predicted valuescan be observed as red line. Since there are many points that lie outside the prediction line especially at peaks where prediction line doesn't completely follows the original points, therefore it can be said that this is not the best fitting.
+
+
+__Identify the trend?__
+
+There is a decreasing trend in mortality from one year to another that mortality rate seems to increase at the beginning of the year and drops at the end of the year.
+
+```{r echo=FALSE}
+
+summary(fit_week) # to check significant values using p values
+
+```
+
+since "year" and "week" both gives p-values less tan the significance level 0.05, therefore both are significant
+
+
+```{r echo=FALSE}
+
+plot(fit_week)
+
+```
+
+The mortality rate seems to decrease from beginning and has the lowest values between weeks 20 to 30 and then mortality again rises from week 35 onwards
+
+## Part 4
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+fit1 <- gam(data_inf$Mortality ~ Year + 
+            s(data_inf$Week,k=52,sp=as.numeric(fit_week$sp)), 
+            data = data_inf,
+            family = "gaussian")
+
+# summary(fit1)
+
+```
+
+The deviance at the selected penalty factor is high that is 68.8% since the penalty factor selected by cross validation is too low.
+
+__Fitting at lower penalty factor:__
+```{r echo=FALSE , warning=FALSE, message=FALSE}
+
+fit2 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=0.000000001), 
+            data = data_inf,family = "gaussian")
+summary(fit2)
+pred2 <- predict(fit2)
+
+```
+
+__Fitting at high penalty factor:__
+
+```{r echo=FALSE , warning=FALSE, message=FALSE}
+
+fit3 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=10), 
+            data = data_inf,
+            family = "gaussian")
+summary(fit3)
+pred3 <- predict(fit3)
+
+
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality,
+                      pred1 = as.vector(pred2),pred2 = as.vector(pred3))
+
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+  geom_point(colour= "blue") +
+  geom_line(aes(time,pred1),colour = "red")+
+  geom_line(aes(time,pred2),colour = "green")
+
+p1
+
+```
+
+The very high annd very low values of penalty factor leads to overfitting of model, as it is evident from the plot in which green line represents the predicted values when penalty factor is too high while red line represents the mortality when penalty factor is too low.
+
+Since the relationship $df_{\lambda}={\sum_{k=1}^N}\frac{1}{1+{\lambda}d_k}$ it is obvious that ${\lambda}$ is inversely proportional to $df_{\lambda}$
+
+From plot, it can be observed that deviance and degrees of freedom decreases with increase in penalty factor which satisfies the above equation
+
+## Part 5
+
+```{r}
+df_plot <- data.frame(time= data_inf$Time, 
+                      influenza = data_inf$Influenza, 
+                      residual = as.vector(fit_week$residuals))
+ 
+p2 <- ggplot(df_plot, aes(x= time, y = influenza)) +
+  geom_point(colour= "blue") +
+  geom_line(aes(time,residual),colour = "red")
+
+p2
+
+```
+
+Yes, it is evident from the plot that the temporal pattern in residuals seems to be correlated to the outbreak of influenza since the peaks in influenza appears relative to the peaks in residuals obtained from Generalized Additive Model applied in step 2.
+
+
+## part 6
+
+```{r echo=FALSE}
+
+w <- unique(data_inf$Week)
+y <- unique(data_inf$Year)
+i <- unique(data_inf$Influenza)
+
+fit_f <- gam(data_inf$Mortality ~ s(data_inf$Year,k=length(y))
+             + s(data_inf$Week,k=length(w))
+             + s(data_inf$Influenza,k=length(i)), data = data_inf,
+             family = "gaussian", method = "GCV.Cp")
+
+pred_f <- predict(fit_f)
+
+par(mfrow=c(2,2))
+plot(fit_f)
+
+```
+
+It can be illustrated from the plots of spline components that mortality does not depend much on year and have little change with weeks, but the mortality shows a significant relationship with influenza that is with increasing cases of influenza, mortality increases.
+
+To support the above phenomenon, plot of predicted values based on model which includes influenza as spline function and true values is presented below:
+
+```{r echo=FALSE}
+
+par(mfrow=c(1,1))
+
+df_plot <- data.frame(time= data_inf$Time, mortality = data_inf$Mortality, 
+                      predicted = as.vector(pred_f))
+
+p3 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+  geom_point(colour= "blue") +
+  geom_line(aes(time,predicted),colour = "red")
+
+p3
+
+```
+
+Predicted values is represented by the line while true values is presented with  blue points.The plot of original and predicted values implies that this model is better than the previous models as it gives the predicted values closest to the original values that is predicted values captures most of the points in original data. This also indicates that including influenza in modelling has a significant impact on fitting.
+
+
+# Assignment 2. High-dimensional Methods 
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+data <- read.csv2("data.csv", header = TRUE, sep = ";", quote = "\"",
+                  dec = ",", fill = TRUE, check.names = FALSE)
+
+data1 <- as.data.frame(data)
+
+data_email <- as.data.frame(data)
+
+data_email$Conference <- as.factor(data$Conference)
+
+n=dim(data_email)[1]
+set.seed(12345)
+# 70% Training Data
+id=sample(1:n, floor(n*0.7))
+train=data_email[id,]
+# 30% validation & testing Data
+test = data_email[-id,]
+
+```
+
+## PART 1
+```{r echo=FALSE, results='hide', warning=FALSE,message=FALSE}
+
+library(pamr)
+
+rownames(train) <- 1:nrow(train)
+
+which(colnames(train)=="Conference")
+
+x <- t(train[,-4703])
+y <- train[[4703]]
+
+test_x <- t(test[,-4703])
+
+mydata <- list(x=x, y= as.factor(y), geneid=as.character(1:nrow(x)),genenames = rownames(x))
+
+model_train <- pamr.train(mydata)
+
+cv_model <- pamr.cv(model_train, data = mydata)
+
+# threshold for which errors are least is 1.306 with 5 errors
+
+print(cv_model)
+
+#pamr.plotcv(cv_model)
+
+model_fit <- pamr.train(mydata, threshold = cv_model$threshold[which.min(cv_model$error)])
+
+pamr.plotcen(model_train, mydata, threshold = cv_model$threshold[which.min(cv_model$error)])
+features = pamr.listgenes(model_train, mydata, threshold = 1.306, genenames=TRUE)
+no_of_feature_cen <- nrow(features)
+
+```
+
+The features that have the non-zero degrees of freedom contributes to classification and are shown in plot with a horizontal bars on 0,1 line. In figure, 1 represents the features that corresponds to the announcement of conference while 0 represents everything else. 
+
+The features that are in top contributes the most for classification while those at the bottom are nearly shrunk to zero.
+
+Since there are many features that contributes to classification, therefore the features are not clearly visible and distinguished in the plot.
+
+__How many features were selected by the method?__
+
+231 features have been selected in total.
+
+__Which features contributes the most for classification?__
+
+```{r echo=FALSE}
+
+cat( paste( colnames(train)[as.numeric(features[1:10,1])], collapse='\n' ) )
+
+```
+
+The above features are the most contributing based on the score which greatly 
+discriminates conference announcements from other emails since the score difference between the two classes is highest for these features
+
+__Test Error__
+
+```{r echo=FALSE}
+
+
+ypredict <- pamr.predict(model_train, newx = test_x, type = "class", threshold = 1.306)
+
+conf_mat <- table(ypredict, test$Conference)
+misclas_centroid <- 1 - (sum(diag(conf_mat))/sum(conf_mat))
+
+misclas_centroid
+
+```
+
+## Part 2 
+
+### Elastic Net
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+
+
+library(glmnet)
+set.seed(12345)
+response <- train$Conference
+predictors <- as.matrix(train[,-4703])
+
+elastic_model <- glmnet(x=predictors,y=response,family = "binomial",alpha = 0.5)
+
+cv.fit <- cv.glmnet(x=predictors,y=response,family="binomial",alpha = 0.5)
+cv.fit$lambda.min
+
+# par(mar=c(2,2,2,2))
+# plot(cv.fit)
+plot(elastic_model)
+
+predictor_test <- as.matrix(test[,-4703])
+
+ypredict <- predict(object = elastic_model,newx = predictor_test,
+                    s = cv.fit$lambda.min, type = "class", exact = TRUE)
+
+confusion_mat <- table(ypredict,test$Conference)
+
+misclassification_elastic <- 1 - (sum(diag(confusion_mat))/sum(confusion_mat))
+
+selected_coeff<- as.numeric(coef(elastic_model, s=cv.fit$lambda.min))
+
+no_of_features_el <- length(selected_coeff[selected_coeff != 0])
+
+```
+
+
+### Test Error
+```{r, echo=FALSE}
+
+misclassification_elastic
+no_of_features_el
+
+```
+
+`39 features` have been selected by the elastic net model.
+
+The misclassification for elastic net is calculated to be `0.1`
+
+
+
+### Support Vector Machine
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+
+
+# library(kernlab) #KSVM is function used for support vector
+
+# x <- as.matrix(train[,-4703])
+# y <- train[,4703]
+# 
+# svm_fit <- ksvm(x = Conference ~ . ,data = train,kernel="vanilladot", scaled = FALSE)
+# 
+#  ypred <- predict(svm_fit, newdata = test, type="response")
+# 
+# confusion_mat <- table(ypred,test$Conference)
+# 
+# misclas_svm <- 1 - sum (diag(confusion_mat))/sum(confusion_mat)
+
+```
+
+### Test Error
+
+
+```{r,echo=FALSE}
+
+# misclas_svm
+
+```
+
+`4703` number of features has been selected that is all features using SVM
+The misclassification rate of svm model is 0.05
+
+
+### comparision of misclassification rate of centroid, elastic net and svm
+
+```{r echo=FALSE}
+library(knitr)
+
+df_misclas <- data.frame("machine type"=c("centroid","elastic","svm"),
+                         misclassification=c(misclas_centroid,misclassification_elastic,
+                                             0.05), 
+                         "No OF Feature"=c(no_of_feature_cen,no_of_features_el,4703))
+
+kable(df_misclas, caption = "Misclassification Table")
+
+```
+
+Though svm has the lowest misclassification rate that is the best performance, but elastic model is the best because the number of features selected by svm is 4703 which is the complete data while that by elastic net is 39. Moreover on the basis of selection of features, the performance of nearest centroid can be better than SVM. Thus, it can be concluded that SVM is best model but its cost because of selection of all features is more.
+
+## Part 3
+
+### Benjamini Hochberg Method
+
+```{r echo=FALSE}
+
+pvals <- c()
+
+
+for (i in 1:(ncol(data1)-1)) {
+  
+  ttest <- t.test(data1[,i] ~ Conference, data = data1, alternative = "two.sided")
+  pvals[i] <- ttest$p.value
+}
+
+pvalues_df <- data.frame(p_value=pvals,feature=1:(ncol(data1)-1) ) 
+pvalues_df <- pvalues_df[order(pvalues_df$p_value),]
+
+
+ALPHA <- 0.05
+L <- c()
+it <- 1
+# Let alpha = 0.05  ## ask oleg
+for (j in 1:nrow(pvalues_df)) {
+  if(pvalues_df$p_value[j] < ALPHA * (j / nrow(pvalues_df)) )
+  {
+    L[it] <- j
+    it <- it +1
+  }
+}
+max(L)
+
+LL = pvalues_df$p_value[max(L)]
+LL
+newPvalues <- c()
+pvalue_feature <- c()
+pvalue_status <- c()
+j<- 1
+for (j in 1:nrow(pvalues_df)) 
+{
+  
+  pvalue_status[j] <- TRUE
+  newPvalues[j] <- pvalues_df$p_value[j]
+  pvalue_feature[j] <- pvalues_df$feature[j]
+  if(pvalues_df$p_value[j] <= LL)
+  {
+    pvalue_status[j] <- FALSE
+  }
+  
+}
+result <- data.frame(p_value=newPvalues, feature=pvalue_feature,status=pvalue_status)
+```
+
+
+```{r echo=FALSE}
+rejected_features <- c()
+k <- 1
+for (j in 1:(ncol(data1)-1))  {
+  
+  if(result$status[j] == FALSE)
+  {
+    rejected_features[k] <- colnames(data1[result$feature[j]])
+    k<- k + 1
+  }
+}
+cat(paste(rejected_features, collapse = '\n'))
+ggplot(data = result, aes(x = 1:4702,y=result$p_value, col = status)) + geom_point() + labs(x="feature",y="p-value")
+
+
+```
+
+The features that corresponds to the rejected hypothesis are the 
+ones which are most relevant to "announcement of conference", that 
+is which contributes the most for the classification of announcement of conference 
+
+
+# APPENDIX
+
+```{r eval=FALSE}
+
+# Assignment 1
+
+library(readxl)
+library(ggplot2)
+#library(grid)
+#library(gridExtra)
+library(reshape2)
+data <- read_excel("influenza.xlsx")
+data_inf <- as.data.frame(data)
+
+df_plot <- data.frame(time= data_inf$Time, 
+                      mortality = data_inf$Mortality, 
+                      influenza = data_inf$Influenza)
+
+
+df <- melt(df_plot,measure.vars = c("mortality","influenza"))
+ggplot(df,aes(x= time, y = value,colour = variable)) + 
+  geom_point()
+
+
+## part 2
+library(mgcv)
+
+w <- unique(data_inf$Week)
+fit_week <- gam(data_inf$Mortality ~ data_inf$Year + s(data_inf$Week,k=52), 
+                data = data_inf,
+                family = "gaussian", 
+                method = "GCV.Cp")
+
+pred <- predict(fit_week)
+
+# Probilistic model: y = wo + w1x1 + w2x1^2 + e  
+#(where wo=intercept,  w1= est value of 1st var, 
+#w2= est value of 2nd var)
+# Probilistic model: 
+#$y = -680.589 + 1.233*x1 + s(Week) + {\epsilon}~N(0,{\sigma}^2)
+
+
+## part3 
+
+df_plot <- data.frame(time= data_inf$Time, 
+                      mortality = data_inf$Mortality, 
+                      pred = as.vector(pred))
+
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+  geom_point(colour= "blue") +
+  geom_line(aes(time,pred),colour = "red")+ 
+  coord_cartesian(xlim = c(1995,2003))
+p1
+
+plot(fit_week)
+
+summary(fit_week) # to check significant values using p values
+
+# part 4
+
+fit1 <- gam(
+  data_inf$Mortality ~ Year + s(data_inf$Week,
+  k=52,sp=as.numeric(t(fit_week$sp))),
+  data = data_inf,
+  family = "gaussian")
+
+summary(fit1)
+pred1 <- predict(fit1)
+
+fit2 <- gam(
+          data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=0.000000001), 
+          data = data_inf,family = "gaussian")
+
+summary(fit2)
+pred2 <- predict(fit2)
+
+
+fit3 <- gam(data_inf$Mortality ~ Year + s(data_inf$Week,k=52,sp=1.5), 
+            data = data_inf,family = "gaussian")
+summary(fit3)
+pred3 <- predict(fit3)
+
+df_plot <- data.frame(time= data_inf$Time, 
+                      mortality = data_inf$Mortality, 
+                      pred1 = as.vector(pred2), 
+                      pred2 = as.vector(pred3))
+
+p1 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+  geom_point(colour= "blue") +
+  geom_line(aes(time,pred1),colour = "red")+
+  geom_line(aes(time,pred2),colour = "green")
+
+p1
+
+# part 5
+
+df_plot <- data.frame(time= data_inf$Time, 
+                      influenza = data_inf$Influenza, 
+                      residual = as.vector(fit_week$residuals))
+# 
+p2 <- ggplot(df_plot, aes(x= time, y = influenza)) +
+  geom_point(colour= "blue") +
+  geom_line(aes(time,residual),colour = "red")
+
+p2
+
+
+## part 6
+
+w <- unique(data_inf$Week)
+y <- unique(data_inf$Year)
+i <- unique(data_inf$Influenza)
+
+fit_f <- gam(data_inf$Mortality ~ s(data_inf$Year,k=length(y)) + 
+               s(data_inf$Week,k=length(w)) 
+             + s(data_inf$Influenza,k=length(i)), data = data_inf,
+             family = "gaussian", method = "GCV.Cp")
+
+pred_f <- predict(fit_f)
+
+par(mfrow=c(2,2))
+plot(fit_f)
+
+par(mfrow=c(1,1))
+
+df_plot <- data.frame(time= data_inf$Time,
+                      mortality = data_inf$Mortality, 
+                      predicted = as.vector(pred_f))
+
+p3 <- ggplot(df_plot, aes(x= time, y = mortality)) +
+  geom_point(colour= "blue") +
+  geom_line(aes(time,predicted),colour = "red")
+
+p3
+
+
+
+# Assignment 2
+
+data <- read.csv2("data.csv", header = TRUE, sep = ";", quote = "\"",
+                  dec = ",", fill = TRUE, check.names = FALSE)
+data1 <- as.data.frame(data)
+
+data_email <- as.data.frame(data)
+
+data_email$Conference <- as.factor(data$Conference)
+
+n=dim(data_email)[1]
+set.seed(12345)
+# 70% Training Data
+id=sample(1:n, floor(n*0.7))
+train=data_email[id,]
+# 30% validation & testing Data
+test = data_email[-id,]
+
+
+library(pamr)
+
+rownames(train) <- 1:nrow(train)
+
+which(colnames(train)=="Conference")
+
+x <- t(train[,-4703])
+y <- train[[4703]]
+
+test_x <- t(test[,-4703])
+
+mydata <- list(x=x, y= as.factor(y), 
+               geneid=as.character(1:nrow(x)),genenames = rownames(x))
+
+model_train <- pamr.train(mydata)
+
+cv_model <- pamr.cv(model_train, data = mydata)
+
+pamr.plotcv(cv_model) # legend is not shown in plot and only 2 lines are drawn why?
+print(cv_model)
+
+model_fit <- pamr.train(mydata, 
+                        threshold = cv_model$threshold[which.min(cv_model$error)])
+
+par(mfrow=c(1,1),mar=c(2,2,2,2))
+pamr.plotcen(model_train, mydata, threshold = cv_model$threshold[which.min(cv_model$error)])
+
+features = pamr.listgenes(model_train, 
+                          mydata, threshold = 1.306,
+                          genenames=TRUE)
+cat( paste( colnames(train)[as.numeric(features[1:10,1])], collapse='\n' ) )
+
+ypredict <- pamr.predict(model_train, newx = test_x, 
+                         type = "class", threshold = 1.306)
+
+conf_mat <- table(ypredict, test$Conference)
+misclas_centroid <- 1 - (sum(diag(conf_mat))/sum(conf_mat))
+
+#misclas <- pamr.confusion(cv_model, threshold = 1.306)
+
+df_misclas <- data.frame(centroid = misclas_centroid, elastic = misclassification_elastic,
+                         svm = misclas_svm)
+
+
+## Part 2
+
+library(glmnet)
+set.seed(12345)
+response <- train$Conference
+predictors <- as.matrix(train[,-4703])
+
+elastic_model <- glmnet(x=predictors,y=response,family = "binomial",alpha = 0.5)
+
+
+cv.fit <- cv.glmnet(x=predictors,y=response,family="binomial",alpha = 0.5)
+cv.fit$lambda.min
+
+par(mar=c(2,2,2,2))
+plot(cv.fit)
+plot(elastic_model)
+
+predictor_test <- as.matrix(test[,-4703])
+
+ypredict <- predict(object = elastic_model,newx = predictor_test, s = cv.fit$lambda.min,
+                    type = "class", exact = TRUE)
+
+confusion_mat <- table(ypredict,test$Conference)
+
+misclassification <- 1 - (sum(diag(confusion_mat))/sum(confusion_mat))
+
+
+library(kernlab)
+
+x <- as.matrix(train[,-4703])
+y <- train[,4703]
+
+svm_fit <- ksvm(data = train,Conference ~ . ,kernel="vanilladot", 
+                scaled = FALSE)
+
+ypred <- predict(svm_fit, newdata = test, type="response")
+
+confusion_mat <- table(ypred,test$Conference)
+
+misclas_svm <- 1 - sum (diag(confusion_mat))/sum(confusion_mat)
+
+
+## Part 3
+
+pvals <- c()
+
+for (i in 1:length(data1)) {
+  ttest <- t.test(data1[i], data = data1, alternative = "two.sided")
+  pvals[i] <- ttest$p.value
+}
+
+pvalues_df <- data.frame(p_value=pvals,feature=1:length(data1)) 
+pvalues_df <- pvalues_df[order(pvalues_df$p_value),]
+
+
+a <- 0.05
+L <- c()
+it <- 1
+# Let alpha = 0.05  ## ask oleg
+for (j in 1:nrow(pvalues_df)) {
+  if(pvalues_df$p_value[j] < a * (j / nrow(pvalues_df)) )
+  {
+    L[it] <- j
+    it <- it +1
+  }
+}
+max(L)
+
+LL = pvalues_df$p_value[max(L)]
+LL
+newPvalues <- c()
+pvalue_feature <- c()
+pvalue_status <- c()
+j<- 1
+for (j in 1:nrow(pvalues_df)) 
+{
+  
+  pvalue_status[j] <- TRUE
+  newPvalues[j] <- pvalues_df$p_value[j]
+  pvalue_feature[j] <- pvalues_df$feature[j]
+  if(pvalues_df$p_value[j] <= LL)
+  {
+    pvalue_status[j] <- FALSE
+  }
+  
+}
+result <- data.frame(p_value=newPvalues, feature=pvalue_feature,status=pvalue_status)
+result
+
+rejected_features <- c()
+k <- 1
+for (j in 1:ncol(data1)) {
+  
+  if(result$status[j] == FALSE)
+  {
+    rejected_features[k] <- colnames(data1[result$feature[j]])
+    k<- k + 1
+  }
+}
+rejected_features
+
+```
+
