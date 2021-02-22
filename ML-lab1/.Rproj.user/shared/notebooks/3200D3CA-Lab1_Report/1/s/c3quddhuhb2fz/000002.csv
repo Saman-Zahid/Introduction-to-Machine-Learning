@@ -1,8 +1,0 @@
-"0","kkn <- kknn(Spam~.,data,newdata,k=1)"
-"0","probability <- kkn$fitted.values"
-"0","Y_pred <- ifelse(probability > 0.5,1,0)"
-"0","col_num <- ncol(data)"
-"0","# Confusion matrix"
-"0","c_mat <- table(data[,col_num],Y_pred)"
-"0","# misclassification rate"
-"0","mis_class_kknn <- sum(c_mat[row(c_mat) != col(c_mat)])/ sum(c_mat)"
